@@ -65,6 +65,7 @@ echo ""
 # 
 #awk -v a="$baseURL" -v b="$action" -v c="$pod" '{print "kubectl exec --stdin --tty " c " -- " a $0 b " | jq . > "}' tmpConnList > curlCommands
 
+# hokay, we're awking a bunch of stuff. the -v is to add in other variables. the BEGIN with the RS is...magic. I know it works if I place it the way it is.
 awk -v a="$baseURL" -v b="$action" -v c="$pod" 'BEGIN {RS = "\n"}{print "kubectl exec --stdin --tty " c " -- " a $0 b " | jq . > " $0".status"}' tmpConnList > ./status/statusCommands
 
 #cat curlCommands
