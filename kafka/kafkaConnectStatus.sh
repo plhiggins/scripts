@@ -27,25 +27,32 @@ echo ""
 
 if [[ -d "./status" ]]
    then
-	#echo "status dir exists"
+	echo "status dir exists. skipping create"
    else
-        echo "making subdir 'status'"
-        mkdir status
+        echo "making subdir 'status'" && mkdir status
 fi
 
 echo ""
 # if you need the list, uncomment below and read from file
 #kubectl get pod | grep "$matchPod" | head -1 |cut -d ' ' -f 1 > tmpPodList
 
+sleep 1
+
 # getting a pod to pull connectors/status/restart/make coffee
+echo $(date)
+echo "getting pods for pattern "$matchPod""
 pod=`kubectl get pod | grep "$matchPod" | head -1 |cut -d ' ' -f 1`
+echo ""
+echo "pods retrieved"
+echo ""
+echo ""
 
 # exec into pod and retrieve connector list
-#k exec --stdin --tty experience-kafka-connect-ddd6bb5c7-5qs4w -- curl http://localhost:8084/connectors | jq . | less
-
-#kubectl exec --stdin --tty "$pod" -- curl http://localhost:8084/connectors | jq . > tmpConnList
-
+sleep 1
+echo $(date)
+echo "getting connector status"
 kubectl exec --stdin --tty "$pod" -- curl http://localhost:8084/connectors | jq -r '. | join("\n")' > tmpConnList
+echo ""
 
 # file clean up time; replaced by jq join
 #sed -i '/^\[/d' tmpConnList
@@ -61,17 +68,22 @@ kubectl exec --stdin --tty "$pod" -- curl http://localhost:8084/connectors | jq 
 awk -v a="$baseURL" -v b="$action" -v c="$pod" 'BEGIN {RS = "\n"}{print "kubectl exec --stdin --tty " c " -- " a $0 b " | jq . > " $0".status"}' tmpConnList > ./status/statusCommands
 
 #cat curlCommands
-
+sleep 1
 echo ""
 echo $(date)
 echo "checking the status for each connector"
 cd status
 bash statusCommands
 echo ""
+echo ""
 echo $(date)
 
 echo ""
+echo "##################################################"
+echo "You can find the detailed results for each connector in the ./status dir"
+echo ""
 echo "You can also find the commands in ./status/statusCommands"
+echo "##################################################"
 echo ""
 
 echo  "TASK COUNTS:"
