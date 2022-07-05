@@ -19,6 +19,9 @@ action='/status'
 
 ## script vars
 RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 ###############################################
 
@@ -90,13 +93,18 @@ echo ""
 echo  "TASK COUNTS:"
 
 echo -e "Below is the ${RED}FAILED${NC} task count:"
-grep -c FAILED *.status
+grep -c FAILED *.status | grep -v ":0"
 
 echo ""
 echo ""
-echo "Below is the running task count:"
-grep -c RUNNING *.status
+
+echo -e "Below is the ${YELLOW}PAUSED${NC} task count:"
+grep -c PAUSED *.status | grep -v ":0"
 
 echo ""
-echo -e "${RED}DONE!"
+echo -e "Below is the ${GREEN}RUNNING${NC} task count:"
+grep -c RUNNING *.status | grep -v ":0"
+
+echo ""
+echo -e "${BLUE}!!!DONE!!!"
 echo -e "${NC}"
